@@ -84,11 +84,14 @@ def send_info(bot,update,args):
         
     else:
         if(validNIF.match(args[0])!=None or validNIE.match(args[0])!=None):
-            text=""
             info=get_info(args[0])
-            for element in info:
-                text+=element+'\n'
-            if(text==None):
+            if(info!=None):
+                text=""
+                i=0
+                for element in info:
+                    text+=campos[i]+' '+element+'\n'
+                    i+=1
+            else:    
                 text="*NO SE ENCUENTRA NIF O NIE:* %s" % args[0]
                 
         else:
