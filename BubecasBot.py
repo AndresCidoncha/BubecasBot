@@ -3,9 +3,14 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+from Crypto.Cipher import AES
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 from telegram import Emoji, ParseMode
 from telegram import ReplyKeyboardMarkup, KeyboardButton
+
+#Variables de cifrado
+CIFRADO=""
+VECTOR=""
 
 #Diccionario -> TelegramID: (DNI,STATE)
 users=dict()
@@ -20,8 +25,10 @@ register=0
 campos=["*Nombre:*","*Estudios:*","*Tipo:*","*Estado:*"]
 
 def loadList():
+    obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
     f = open('/home/ubuntu/workspace/id/users.id', 'r')
     for line in f:
+        line=obj.decrypt(line.replace('\n',''))
         try:
             id=int(line[:line.find(':')])
             dni=line[line.find(':')+1:].replace('\n','')
@@ -30,9 +37,16 @@ def loadList():
             pass
     
 def saveList():
+    obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
     f = open('/home/ubuntu/workspace/id/users.id', 'w')
     for user in users.keys():
-        f.write(str(user) + ':' + users[user][0] + '\n')
+        cadena=str(user) + ':' + users[user][0]
+        while((len(cadena)%16)!=0):
+            cadena+=' '
+        cadena=obj.encrypt(cadena)
+        cadena=cadena+'\n'
+        f.write(cadena)
+    f.close()
 
 def get_info(mdni):
     url = 'http://193.145.111.205/respuesta.asp'
@@ -177,9 +191,18 @@ def messageHandler(bot,update):
         bot.sendMessage(chat_id=update.message.from_user.id, text=text, parse_mode=ParseMode.MARKDOWN)
 
 def main():
+    #CIFRADO
+    f = open('/home/ubuntu/workspace/key/cif.key', 'r')
+    global CIFRADO
+    CIFRADO=f.readline().replace('\n','')
+    global VECTOR
+    VECTOR=f.readline().replace('\n','')
+    f.close()
     loadList()
+    #TOKEN
     f = open('/home/ubuntu/workspace/id/token.id', 'r')
     TOKEN=f.read()
+    f.close()
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(token=TOKEN)
     # Get the dispatcher to register handlers
