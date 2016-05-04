@@ -11,8 +11,8 @@ from telegram import ReplyKeyboardMarkup, KeyboardButton
 users=dict()
 
 #RE para comprobar NIF y NIE váidos
-validNIF=re.compile('[0-9]{8}[a-zA-Z]')
-validNIE=re.compile('[a-zA-Z][0-9]{7}[a-zA-Z]')
+validNIF_re=re.compile('[0-9]{8}[a-zA-Z]')
+validNIE_re=re.compile('[a-zA-Z][0-9]{7}[a-zA-Z]')
 
 #Variable de estado
 register=0
@@ -83,7 +83,7 @@ def send_info(bot,update,args):
         text="Debes especificar un NIF o NIE después del comando.\nEJ: /info 58963214X"
         
     else:
-        if(validNIF.match(args[0])!=None or validNIE.match(args[0])!=None):
+        if(validNIF_re.match(args[0])!=None or validNIE_re.match(args[0])!=None):
             info=get_info(args[0])
             if(info!=None):
                 text=""
@@ -109,7 +109,7 @@ def send_status(bot,update,args):
         text="Debes especificar un NIF o NIE después del comando.\nEJ: /status 58963214X"
         
     else:
-        if(validNIF.match(args[0])!=None or validNIE.match(args[0])!=None):
+        if(validNIF_re.match(args[0])!=None or validNIE_re.match(args[0])!=None):
             text=get_status(args)
             if(text==None):
                 text="*NO SE ENCUENTRA NIF O NIE:* %s" % args[0]
@@ -127,7 +127,7 @@ def searchUpdates(bot):
             bot.sendMessage(chat_id=user, text=text, parse_mode=ParseMode.MARKDOWN)
 
 def setDNI(bot,update,args):
-    if(validNIF.match(args[0])!=None or validNIE.match(args[0])!=None):
+    if(validNIF_re.match(args[0])!=None or validNIE_re.match(args[0])!=None):
         state=get_status(args[0])
         if(state!=None):
             users[update.message.from_user.id]=(args[0],state)
@@ -163,7 +163,7 @@ def messageHandler(bot,update):
             register=0
         bot.sendMessage(chat_id=update.message.from_user.id, text=text, parse_mode=ParseMode.MARKDOWN)
     elif(register==2):        
-        if(validNIF.match(update.message.text)!=None or validNIE.match(update.message.text)!=None):
+        if(validNIF_re.match(update.message.text)!=None or validNIE_re.match(update.message.text)!=None):
             state=get_status(update.message.text)
             if(state!=None):
                 users[update.message.from_user.id]=(update.message.text,state)
@@ -208,6 +208,8 @@ def main():
     # Start the Bot
     updater.start_polling(timeout=5)
 
+    searchUpdates(updater.bot)
+    
     # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT
     updater.idle()
