@@ -20,3 +20,5 @@ Usa [Python Bot API](https://github.com/python-telegram-bot/python-telegram-bot)
 **/info [DNI]** - Obtiene toda la información acerca de la solicitud. En caso de pasar un DNI como parámetro, devolverá la información de la solicitud del DNI indicado.
 
 **/stop** - Detiene el servicio del bot y elimina los datos almacenados de tu usuario (relación ID-DNI).
+
+Código liberado bajo licencia GNU v3.
