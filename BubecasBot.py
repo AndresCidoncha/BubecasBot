@@ -160,7 +160,7 @@ def start(bot,update):
     register=1
     custom_keyboard = [[ KeyboardButton("Permitir"),KeyboardButton("No permitir") ]]
     reply_markup = ReplyKeyboardMarkup(custom_keyboard,resize_keyboard=True,one_time_keyboard=True)
-    bot.sendMessage(chat_id=update.message.from_user.id, text="Para poder enviarte notificaciones en tiempo real de cuando se actualiza el estado de tu beca, necesito almacenar una relación entre tu ID de Telegram y tu DNI.\nTus datos son eliminados una vez llamas a la función /stop", reply_markup=reply_markup)
+    bot.sendMessage(chat_id=update.message.from_user.id, text="Para poder enviarte notificaciones en tiempo real de cuando se actualiza el estado de tu beca, necesito almacenar una relación entre tu ID de Telegram y tu DNI.\nLos datos se almacenan usando cifrado *AES*\nTus datos son eliminados una vez llamas a la función /stop", reply_markup=reply_markup)
     
 def stop(bot,update):
     if update.message.from_user.id in users.keys():
@@ -200,10 +200,12 @@ def main():
     VECTOR=f.readline().replace('\n','')
     f.close()
     loadList()
+    
     #TOKEN
     f = open('/home/ubuntu/workspace/id/token.id', 'r')
     TOKEN=f.read()
     f.close()
+    
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(token=TOKEN)
     # Get the dispatcher to register handlers
