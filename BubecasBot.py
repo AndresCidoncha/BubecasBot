@@ -35,6 +35,7 @@ def loadList():
             users[id]=(dni,get_status(dni))
         except Exception:
             pass
+    f.close()
     
 def saveList():
     obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
