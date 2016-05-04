@@ -11,6 +11,9 @@ Usa [Bubecas](http://193.145.111.205/bubecas.htm) para obtener la información.
 Usa [Python Bot API](https://github.com/python-telegram-bot/python-telegram-bot).
 
 ##Uso
+
+[¡Háblame!](http://telegram.me/BubecasBot)
+
 **/start** - Inicia el bot con el asistente de notificacion en tiempo real.
 
 **/setDNI <DNI>** - Especifica tu DNI al sistema para activar las notificaciones en tiempo real.
