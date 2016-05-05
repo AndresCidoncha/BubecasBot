@@ -30,9 +30,12 @@ def loadList():
     for line in f:
         line=obj.decrypt(line.replace('\n',''))
         try:
+            p1=line.find(':')
             id=int(line[:line.find(':')])
-            dni=line[line.find(':')+1:].replace('\n','')
-            users[id]=(dni,get_status(dni))
+            p2=line.find(':',p1+1)
+            dni=line[p1+1:p2]
+            status=line[p2+1:].rstrip(' ')
+            users[id]=(dni,status)
         except Exception:
             pass
     f.close()
@@ -41,12 +44,17 @@ def saveList():
     obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
     f = open('/home/ubuntu/workspace/id/users.id', 'w')
     for user in users.keys():
-        cadena=str(user) + ':' + users[user][0]
-        while((len(cadena)%16)!=0):
-            cadena+=' '
-        cadena=obj.encrypt(cadena)
-        cadena=cadena+'\n'
-        f.write(cadena)
+        try:
+            cadena=str(user) + ':' 
+            cadena=cadena + users[user][0] + ':' + users[user][1].decode('UTF-8')
+            cadena=cadena.encode('UTF-8')
+            while((len(cadena)%16)!=0):
+                cadena+=' '
+            cadena=obj.encrypt(cadena)
+            cadena=cadena+'\n'
+            f.write(cadena)
+        except Exception, ex:
+            print ex
     f.close()
 
 def get_info(mdni):
@@ -160,7 +168,7 @@ def start(bot,update):
     register=1
     custom_keyboard = [[ KeyboardButton("Permitir"),KeyboardButton("No permitir") ]]
     reply_markup = ReplyKeyboardMarkup(custom_keyboard,resize_keyboard=True,one_time_keyboard=True)
-    bot.sendMessage(chat_id=update.message.from_user.id, text="Para poder enviarte notificaciones en tiempo real de cuando se actualiza el estado de tu beca, necesito almacenar una relación entre tu ID de Telegram y tu DNI.\nLos datos se almacenan usando cifrado *AES*\nTus datos son eliminados una vez llamas a la función /stop", reply_markup=reply_markup)
+    bot.sendMessage(chat_id=update.message.from_user.id, text="Para poder enviarte notificaciones en tiempo real de cuando se actualiza el estado de tu beca, necesito almacenar una relación entre tu ID de Telegram y tu DNI.\nLos datos se almacenan usando cifrado *AES*\nTus datos son eliminados una vez llamas a la función /stop", reply_markup=reply_markup, parse_mode=ParseMode.MARKDOWN)
     
 def stop(bot,update):
     if update.message.from_user.id in users.keys():
@@ -208,6 +216,9 @@ def main():
     
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(token=TOKEN)
+    
+    searchUpdates(updater.bot)
+    
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
