@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -26,7 +26,7 @@ campos=["*Nombre:*","*Estudios:*","*Tipo:*","*Estado:*"]
 
 def loadList():
     obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
-    f = open('/home/ubuntu/workspace/id/users.id', 'r')
+    f = open('users.id', 'r')
     for line in f:
         line=obj.decrypt(line.replace('\n',''))
         try:
@@ -42,7 +42,7 @@ def loadList():
     
 def saveList():
     obj = AES.new(CIFRADO, AES.MODE_CBC, VECTOR)
-    f = open('/home/ubuntu/workspace/id/users.id', 'w')
+    f = open('users.id', 'w')
     for user in users.keys():
         try:
             cadena=str(user) + ':' 
@@ -201,17 +201,15 @@ def messageHandler(bot,update):
 
 def main():
     #CIFRADO
-    f = open('/home/ubuntu/workspace/key/cif.key', 'r')
     global CIFRADO
-    CIFRADO=f.readline().replace('\n','')
+    CIFRADO=os.environ.get('CIFRADO')
     global VECTOR
-    VECTOR=f.readline().replace('\n','')
-    f.close()
+    VECTOR=os.environ.get('VECTOR')
+
     loadList()
     
     #TOKEN
-    f = open('/home/ubuntu/workspace/id/token.id', 'r')
-    TOKEN=f.read()
+    TOKEN=os.environ.get('TOKEN')
     f.close()
     
     # Create the EventHandler and pass it your bot's token.
